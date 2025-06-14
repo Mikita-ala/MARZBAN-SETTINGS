@@ -1,0 +1,30 @@
+name: Обновление сабмодуля v2ray-configs
+
+on:
+  schedule:
+    - cron: '0 * * * *' # каждый час в 00 минут (UTC)
+
+  workflow_dispatch:
+
+jobs:
+  update-submodule:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Клонирование репозитория с рекурсивными сабмодулями
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Обновление сабмодуля до последнего коммита
+        run: |
+          cd external/v2ray-configs
+          git checkout main
+          git pull origin main
+          cd ../..
+          git add external/v2ray-configs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Автоматическое обновление сабмодуля v2ray-configs"
+          git push

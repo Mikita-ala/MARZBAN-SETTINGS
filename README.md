@@ -96,7 +96,152 @@ server {
 <summary>Нажмите, чтобы развернуть конфигурацию</summary>
 
 ```json
-{...}
+{{
+	"log": {
+		"loglevel": "warning"
+	},
+	"routing": {
+		"rules": [
+			{
+				"ip": ["geoip:private"],
+				"outboundTag": "BLOCK",
+				"type": "field"
+			}
+		]
+	},
+	"inbounds": [
+		{
+			"tag": "Shadowsocks TCP",
+			"listen": "0.0.0.0",
+			"port": 1080,
+			"protocol": "shadowsocks",
+			"settings": {
+				"clients": [],
+				"network": "tcp,udp"
+			}
+		},
+		{
+			"tag": "VLESS TCP REALITY",
+			"listen": "0.0.0.0",
+			"port": 443,
+			"protocol": "vless",
+			"settings": {
+				"clients": [],
+				"decryption": "none"
+			},
+			"streamSettings": {
+				"network": "tcp",
+				"tcpSettings": {},
+				"security": "reality",
+				"realitySettings": {
+					"show": false,
+					"dest": "wikiportal.su:443",
+					"xver": 0,
+					"serverNames": ["wikiportal.su"],
+					"privateKey": "sudo docker exec marzban-marzban-1 xray x25519",
+					"shortIds": ["openssl rand -hex 8"]
+				}
+			},
+			"sniffing": {
+				"enabled": true,
+				"destOverride": ["http", "tls", "quic"]
+			}
+		},
+		{
+			"tag": "VLESS GRPC REALITY",
+			"listen": "0.0.0.0",
+			"port": 2053,
+			"protocol": "vless",
+			"settings": {
+				"clients": [],
+				"decryption": "none"
+			},
+			"streamSettings": {
+				"network": "grpc",
+				"grpcSettings": {
+					"serviceName": "xyz"
+				},
+				"security": "reality",
+				"realitySettings": {
+					"show": false,
+					"dest": "wikiportal.su:443",
+					"xver": 0,
+					"serverNames": ["wikiportal.su"],
+					"privateKey": "sudo docker exec marzban-marzban-1 xray x25519",
+					"shortIds": ["openssl rand -hex 8"]
+				}
+			},
+			"sniffing": {
+				"enabled": true,
+				"destOverride": ["http", "tls"]
+			}
+		},
+		{
+			"tag": "VMess TCP",
+			"listen": "0.0.0.0",
+			"port": 8081,
+			"protocol": "vmess",
+			"settings": {
+				"clients": []
+			},
+			"streamSettings": {
+				"network": "tcp",
+				"tcpSettings": {
+					"header": {
+						"type": "http",
+						"request": {
+							"method": "GET",
+							"path": ["/"],
+							"headers": {
+								"Host": ["google.com"]
+							}
+						},
+						"response": {}
+					}
+				},
+				"security": "none"
+			},
+			"sniffing": {
+				"enabled": true,
+				"destOverride": ["http", "tls"]
+			}
+		},
+		{
+			"tag": "VMess Websocket",
+			"listen": "0.0.0.0",
+			"port": 8080,
+			"protocol": "vmess",
+			"settings": {
+				"clients": []
+			},
+			"streamSettings": {
+				"network": "ws",
+				"wsSettings": {
+					"path": "/",
+					"headers": {
+						"Host": "google.com"
+					}
+				},
+				"security": "none"
+			},
+			"sniffing": {
+				"enabled": true,
+				"destOverride": ["http", "tls"]
+			}
+		}
+	],
+	"outbounds": [
+		{
+			"protocol": "freedom",
+			"tag": "DIRECT"
+		},
+		{
+			"protocol": "blackhole",
+			"tag": "BLOCK"
+		}
+	]
+}
+}
 ```
 
 </details>

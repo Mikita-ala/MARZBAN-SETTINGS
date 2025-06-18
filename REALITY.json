@@ -1,0 +1,83 @@
+{
+  "log": {
+    "loglevel": "info",
+    "dnsLog": false
+  },
+  "routing": {
+    "rules": [
+      {
+        "domain": [
+          "geosite:category-ads"
+        ],
+        "outboundTag": "block"
+      },
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "block",
+        "type": "field"
+      }
+    ]
+  },
+  "inbounds": [
+    {
+        "tag": "Shadowsocks TCP",
+		"listen": "0.0.0.0",
+		"port": 1080,
+		"protocol": "shadowsocks",
+        "settings": {
+		    "clients": [],
+            "network": "tcp,udp"
+			}			
+	},
+    {
+      "tag": "vless-in",
+      "port": 443,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "XXX",
+            "flow": "xtls-rprx-vision"
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "dest": "wikipedia.org:443",
+          "serverNames": [
+            "wikipedia.org",
+            "www.wikipedia.org"
+          ],
+          "privateKey": "XXXX",
+          "shortIds": [
+            "XXX",
+            "XXX",
+            "XX"
+          ]
+        }
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls"
+        ]
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "freedom",
+      "tag": "direct"
+    },
+    {
+      "protocol": "blackhole",
+      "tag": "block"
+    }
+  ]
+}
